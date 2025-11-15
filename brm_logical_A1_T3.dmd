@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="brm_logical_A1_T3" id="C29E59F3-B1A4-B8CF-64DE-24516E82CC13" version="3.5">
+<createdBy>Raveen Pieris</createdBy>
+<createdTime>2025-09-10 01:21:50 UTC</createdTime>
+<ownerDesignName>brm_logical_A1_T3</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>C29E59F3-B1A4-B8CF-64DE-24516E82CC13</designId>
+</OSDM_Design>

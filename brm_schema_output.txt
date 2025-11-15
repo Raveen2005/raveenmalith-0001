@@ -1,0 +1,587 @@
+SQL> 
+SQL> 
+SQL> DROP TABLE COMBINATION_RATE CASCADE CONSTRAINTS 
+  2  ;
+
+Table COMBINATION_RATE dropped.
+
+SQL> 
+SQL> DROP TABLE COMBINATIONS CASCADE CONSTRAINTS 
+  2  ;
+
+Table COMBINATIONS dropped.
+
+SQL> 
+SQL> DROP TABLE CUSTOMER CASCADE CONSTRAINTS 
+  2  ;
+
+Table CUSTOMER dropped.
+
+SQL> 
+SQL> DROP TABLE EMPLOYEE CASCADE CONSTRAINTS 
+  2  ;
+
+Table EMPLOYEE dropped.
+
+SQL> 
+SQL> DROP TABLE JOB CASCADE CONSTRAINTS 
+  2  ;
+
+Table JOB dropped.
+
+SQL> 
+SQL> DROP TABLE JOBCERT CASCADE CONSTRAINTS 
+  2  ;
+
+Table JOBCERT dropped.
+
+SQL> 
+SQL> DROP TABLE PURPOSE CASCADE CONSTRAINTS 
+  2  ;
+
+Table PURPOSE dropped.
+
+SQL> 
+SQL> DROP TABLE QUOTE CASCADE CONSTRAINTS 
+  2  ;
+
+Table QUOTE dropped.
+
+SQL> 
+SQL> DROP TABLE ROLE CASCADE CONSTRAINTS 
+  2  ;
+
+Table ROLE dropped.
+
+SQL> 
+SQL> DROP TABLE TRAILER CASCADE CONSTRAINTS 
+  2  ;
+
+Table TRAILER dropped.
+
+SQL> 
+SQL> DROP TABLE TRAILERTYPE CASCADE CONSTRAINTS 
+  2  ;
+
+Table TRAILERTYPE dropped.
+
+SQL> 
+SQL> DROP TABLE TRUCK CASCADE CONSTRAINTS 
+  2  ;
+
+Table TRUCK dropped.
+
+SQL> 
+SQL> DROP TABLE TRUCKTYPE CASCADE CONSTRAINTS 
+  2  ;
+
+Table TRUCKTYPE dropped.
+
+SQL> 
+SQL> -- predefined type, no DDL - MDSYS.SDO_GEOMETRY
+SQL> 
+SQL> -- predefined type, no DDL - XMLTYPE
+SQL> 
+SQL> CREATE TABLE COMBINATION_RATE 
+  2      ( 
+  3       comb_hire_rate         NUMBER (9,2)  NOT NULL , 
+  4       PURPOSE_purp_no        NUMBER (6)  NOT NULL , 
+  5       COMBINATIONS_comb_code VARCHAR2 (12)  NOT NULL 
+  6      ) 
+  7  ;
+
+Table COMBINATION_RATE created.
+
+SQL> 
+SQL> ALTER TABLE COMBINATION_RATE 
+  2      ADD CONSTRAINT COMBINATION_RATE_PK PRIMARY KEY ( PURPOSE_purp_no, COMBINATIONS_comb_code ) ;
+
+Table COMBINATION_RATE altered.
+
+SQL> 
+SQL> CREATE TABLE COMBINATIONS 
+  2      ( 
+  3       comb_code            VARCHAR2 (12)  NOT NULL , 
+  4       TRAILER_trailer_code VARCHAR2 (5)  NOT NULL , 
+  5       TRUCK_VIN            VARCHAR2 (17)  NOT NULL 
+  6      ) 
+  7  ;
+
+Table COMBINATIONS created.
+
+SQL> 
+SQL> ALTER TABLE COMBINATIONS 
+  2      ADD CONSTRAINT COMBINATIONS_PK PRIMARY KEY ( comb_code ) ;
+
+Table COMBINATIONS altered.
+
+SQL> 
+SQL> CREATE TABLE CUSTOMER 
+  2      ( 
+  3       cust_no       NUMBER (6)  NOT NULL , 
+  4       given_name    VARCHAR2 (40)  NOT NULL , 
+  5       family_name   VARCHAR2 (40)  NOT NULL , 
+  6       buisness_name VARCHAR2 (40) , 
+  7       address       VARCHAR2 (200)  NOT NULL , 
+  8       contact_no    NUMBER (20)  NOT NULL 
+  9      ) 
+ 10  ;
+
+Table CUSTOMER created.
+
+SQL> 
+SQL> ALTER TABLE CUSTOMER 
+  2      ADD CONSTRAINT CUSTOMER_PK PRIMARY KEY ( cust_no ) ;
+
+Table CUSTOMER altered.
+
+SQL> 
+SQL> CREATE TABLE EMPLOYEE 
+  2      ( 
+  3       given_name      CHAR (40)  NOT NULL , 
+  4       family_name     CHAR (40)  NOT NULL , 
+  5       contact_no      NUMBER (15)  NOT NULL , 
+  6       salary          NUMBER (7,2)  NOT NULL , 
+  7       TFN             NUMBER (9)  NOT NULL , 
+  8       licence_no      VARCHAR2 (20) , 
+  9       ROLE_role_name  VARCHAR2 (16)  NOT NULL , 
+ 10       manager_emp_no  NUMBER (6) , 
+ 11       emp_no          NUMBER (6)  NOT NULL , 
+ 12       EMPLOYEE_emp_no NUMBER (6)  NOT NULL 
+ 13      ) 
+ 14  ;
+
+Table EMPLOYEE created.
+
+SQL> 
+SQL> ALTER TABLE EMPLOYEE 
+  2      ADD CONSTRAINT EMPLOYEE_PK PRIMARY KEY ( emp_no ) ;
+
+Table EMPLOYEE altered.
+
+SQL> 
+SQL> CREATE TABLE JOB 
+  2      ( 
+  3       job_no                 VARCHAR2 (10)  NOT NULL , 
+  4       pickup_dt              DATE  NOT NULL , 
+  5       int_drop_dt            DATE  NOT NULL , 
+  6       paid_flag              CHAR (2)  NOT NULL , 
+  7       job_cost               NUMBER (10)  NOT NULL , 
+  8       COMBINATIONS_comb_code VARCHAR2 (12)  NOT NULL , 
+  9       QUOTE_quote_no         NUMBER (6)  NOT NULL , 
+ 10       EMPLOYEE_emp_no        NUMBER (6)  NOT NULL 
+ 11      ) 
+ 12  ;
+
+Table JOB created.
+
+SQL> 
+SQL> ALTER TABLE JOB 
+  2      ADD CONSTRAINT check_paid_flag 
+  3      CHECK (paid_flag IN ('N', 'Y')) 
+  4  ;
+
+Table JOB altered.
+
+SQL> 
+SQL> COMMENT ON COLUMN JOB.paid_flag IS 'Y- Customer Paid, N- Customer No Paid' 
+  2  ;
+
+Comment created.
+
+SQL> CREATE UNIQUE INDEX JOB__IDX ON JOB 
+  2      ( 
+  3       QUOTE_quote_no ASC 
+  4      ) 
+  5  ;
+
+INDEX JOB__IDX created.
+
+SQL> 
+SQL> ALTER TABLE JOB 
+  2      ADD CONSTRAINT JOB_PK PRIMARY KEY ( job_no ) ;
+
+Table JOB altered.
+
+SQL> 
+SQL> CREATE TABLE JOBCERT 
+  2      ( 
+  3       jobcert_id      NUMBER (6)  NOT NULL , 
+  4       JOB_job_no      VARCHAR2 (10)  NOT NULL , 
+  5       EMPLOYEE_emp_no NUMBER (6)  NOT NULL 
+  6      ) 
+  7  ;
+
+Table JOBCERT created.
+
+SQL> 
+SQL> ALTER TABLE JOBCERT 
+  2      ADD CONSTRAINT JOBCERT_PK PRIMARY KEY ( jobcert_id ) ;
+
+Table JOBCERT altered.
+
+SQL> 
+SQL> ALTER TABLE JOBCERT 
+  2      ADD CONSTRAINT Key_2 UNIQUE ( JOB_job_no ) ;
+
+Table JOBCERT altered.
+
+SQL> 
+SQL> CREATE TABLE PURPOSE 
+  2      ( 
+  3       purp_no   NUMBER (6)  NOT NULL , 
+  4       purp_desc VARCHAR2 (60)  NOT NULL 
+  5      ) 
+  6  ;
+
+Table PURPOSE created.
+
+SQL> 
+SQL> ALTER TABLE PURPOSE 
+  2      ADD CONSTRAINT PURPOSE_PK PRIMARY KEY ( purp_no ) ;
+
+Table PURPOSE altered.
+
+SQL> 
+SQL> CREATE TABLE QUOTE 
+  2      ( 
+  3       quote_no         NUMBER (6)  NOT NULL , 
+  4       prepared_dt      DATE  NOT NULL , 
+  5       prefer_start_dt  DATE  NOT NULL , 
+  6       pickup_location  VARCHAR2 (200)  NOT NULL , 
+  7       dropof_location  VARCHAR2 (200)  NOT NULL , 
+  8       quote_cost       NUMBER (10,2)  NOT NULL , 
+  9       CUSTOMER_cust_no NUMBER (6)  NOT NULL , 
+ 10       PURPOSE_purp_no  NUMBER (6)  NOT NULL , 
+ 11       EMPLOYEE_emp_no  NUMBER (6)  NOT NULL 
+ 12      ) 
+ 13  ;
+
+Table QUOTE created.
+
+SQL> 
+SQL> ALTER TABLE QUOTE 
+  2      ADD CONSTRAINT QUOTE_PK PRIMARY KEY ( quote_no ) ;
+
+Table QUOTE altered.
+
+SQL> 
+SQL> CREATE TABLE ROLE 
+  2      ( 
+  3       role_name VARCHAR2 (16)  NOT NULL 
+  4      ) 
+  5  ;
+
+Table ROLE created.
+
+SQL> 
+SQL> ALTER TABLE ROLE 
+  2      ADD CONSTRAINT ROLE_PK PRIMARY KEY ( role_name ) ;
+
+Table ROLE altered.
+
+SQL> 
+SQL> CREATE TABLE TRAILER 
+  2      ( 
+  3       trailer_code              VARCHAR2 (5)  NOT NULL , 
+  4       purch_date                DATE  NOT NULL , 
+  5       purch_price               NUMBER (10,2)  NOT NULL , 
+  6       trailerdecom_date         DATE , 
+  7       TRAILERTYPE_trailer_model VARCHAR2 (40)  NOT NULL , 
+  8       TRAILERTYPE_trailer_manu  VARCHAR2 (30)  NOT NULL 
+  9      ) 
+ 10  ;
+
+Table TRAILER created.
+
+SQL> 
+SQL> ALTER TABLE TRAILER 
+  2      ADD CONSTRAINT TRAILER_PK PRIMARY KEY ( trailer_code ) ;
+
+Table TRAILER altered.
+
+SQL> 
+SQL> CREATE TABLE TRAILERTYPE 
+  2      ( 
+  3       trailer_manu  VARCHAR2 (30)  NOT NULL , 
+  4       trailer_model VARCHAR2 (40)  NOT NULL 
+  5      ) 
+  6  ;
+
+Table TRAILERTYPE created.
+
+SQL> 
+SQL> ALTER TABLE TRAILERTYPE 
+  2      ADD CONSTRAINT TRAILERTYPE_PK PRIMARY KEY ( trailer_model, trailer_manu ) ;
+
+Table TRAILERTYPE altered.
+
+SQL> 
+SQL> CREATE TABLE TRUCK 
+  2      ( 
+  3       VIN                   VARCHAR2 (17)  NOT NULL , 
+  4       rego_no               VARCHAR2 (40)  NOT NULL , 
+  5       total_km              NUMBER (7)  NOT NULL , 
+  6       lastserv_km           NUMBER (7)  NOT NULL , 
+  7       purch_date            DATE  NOT NULL , 
+  8       purch_price           NUMBER (10,2)  NOT NULL , 
+  9       truckdecom_date       DATE , 
+ 10       TRUCKTYPE_truck_manu  VARCHAR2 (30)  NOT NULL , 
+ 11       TRUCKTYPE_truck_model VARCHAR2 (40)  NOT NULL 
+ 12      ) 
+ 13  ;
+
+Table TRUCK created.
+
+SQL> 
+SQL> ALTER TABLE TRUCK 
+  2      ADD CONSTRAINT TRUCK_PK PRIMARY KEY ( VIN ) ;
+
+Table TRUCK altered.
+
+SQL> 
+SQL> CREATE TABLE TRUCKTYPE 
+  2      ( 
+  3       truck_manu  VARCHAR2 (30)  NOT NULL , 
+  4       truck_model VARCHAR2 (40)  NOT NULL 
+  5      ) 
+  6  ;
+
+Table TRUCKTYPE created.
+
+SQL> 
+SQL> ALTER TABLE TRUCKTYPE 
+  2      ADD CONSTRAINT TRUCKTYPE_PK PRIMARY KEY ( truck_manu, truck_model ) ;
+
+Table TRUCKTYPE altered.
+
+SQL> 
+SQL> ALTER TABLE TRAILER 
+  2      ADD CONSTRAINT classifiesv1 FOREIGN KEY 
+  3      ( 
+  4       TRAILERTYPE_trailer_model,
+  5       TRAILERTYPE_trailer_manu
+  6      ) 
+  7      REFERENCES TRAILERTYPE 
+  8      ( 
+  9       trailer_model,
+ 10       trailer_manu
+ 11      ) 
+ 12  ;
+
+Table TRAILER altered.
+
+SQL> 
+SQL> ALTER TABLE COMBINATION_RATE 
+  2      ADD CONSTRAINT COMBINATION_RATE_PURPOSE FOREIGN KEY 
+  3      ( 
+  4       PURPOSE_purp_no
+  5      ) 
+  6      REFERENCES PURPOSE 
+  7      ( 
+  8       purp_no
+  9      ) 
+ 10  ;
+
+Table COMBINATION_RATE altered.
+
+SQL> 
+SQL> ALTER TABLE COMBINATION_RATE 
+  2      ADD CONSTRAINT combinations_combination_rate FOREIGN KEY 
+  3      ( 
+  4       COMBINATIONS_comb_code
+  5      ) 
+  6      REFERENCES COMBINATIONS 
+  7      ( 
+  8       comb_code
+  9      ) 
+ 10  ;
+
+Table COMBINATION_RATE altered.
+
+SQL> 
+SQL> ALTER TABLE JOB 
+  2      ADD CONSTRAINT COMBINATIONS_JOB FOREIGN KEY 
+  3      ( 
+  4       COMBINATIONS_comb_code
+  5      ) 
+  6      REFERENCES COMBINATIONS 
+  7      ( 
+  8       comb_code
+  9      ) 
+ 10  ;
+
+Table JOB altered.
+
+SQL> 
+SQL> ALTER TABLE JOBCERT 
+  2      ADD CONSTRAINT EMPLOYEE_JOB_CERT FOREIGN KEY 
+  3      ( 
+  4       EMPLOYEE_emp_no
+  5      ) 
+  6      REFERENCES EMPLOYEE 
+  7      ( 
+  8       emp_no
+  9      ) 
+ 10  ;
+
+Table JOBCERT altered.
+
+SQL> 
+SQL> ALTER TABLE EMPLOYEE 
+  2      ADD CONSTRAINT EMPLOYEE_MANAGER FOREIGN KEY 
+  3      ( 
+  4       EMPLOYEE_emp_no
+  5      ) 
+  6      REFERENCES EMPLOYEE 
+  7      ( 
+  8       emp_no
+  9      ) 
+ 10  ;
+
+Table EMPLOYEE altered.
+
+SQL> 
+SQL> ALTER TABLE QUOTE 
+  2      ADD CONSTRAINT EMPLOYEE_QUOTE FOREIGN KEY 
+  3      ( 
+  4       EMPLOYEE_emp_no
+  5      ) 
+  6      REFERENCES EMPLOYEE 
+  7      ( 
+  8       emp_no
+  9      ) 
+ 10  ;
+
+Table QUOTE altered.
+
+SQL> 
+SQL> ALTER TABLE JOB 
+  2      ADD CONSTRAINT JOB_EMPLOYEE FOREIGN KEY 
+  3      ( 
+  4       EMPLOYEE_emp_no
+  5      ) 
+  6      REFERENCES EMPLOYEE 
+  7      ( 
+  8       emp_no
+  9      ) 
+ 10  ;
+
+Table JOB altered.
+
+SQL> 
+SQL> ALTER TABLE JOBCERT 
+  2      ADD CONSTRAINT JOB_JOB_CERT FOREIGN KEY 
+  3      ( 
+  4       JOB_job_no
+  5      ) 
+  6      REFERENCES JOB 
+  7      ( 
+  8       job_no
+  9      ) 
+ 10  ;
+
+Table JOBCERT altered.
+
+SQL> 
+SQL> ALTER TABLE QUOTE 
+  2      ADD CONSTRAINT purpose_quote FOREIGN KEY 
+  3      ( 
+  4       PURPOSE_purp_no
+  5      ) 
+  6      REFERENCES PURPOSE 
+  7      ( 
+  8       purp_no
+  9      ) 
+ 10  ;
+
+Table QUOTE altered.
+
+SQL> 
+SQL> ALTER TABLE QUOTE 
+  2      ADD CONSTRAINT QUOTE_CUSTOMER FOREIGN KEY 
+  3      ( 
+  4       CUSTOMER_cust_no
+  5      ) 
+  6      REFERENCES CUSTOMER 
+  7      ( 
+  8       cust_no
+  9      ) 
+ 10  ;
+
+Table QUOTE altered.
+
+SQL> 
+SQL> ALTER TABLE JOB 
+  2      ADD CONSTRAINT QUOTE_JOB FOREIGN KEY 
+  3      ( 
+  4       QUOTE_quote_no
+  5      ) 
+  6      REFERENCES QUOTE 
+  7      ( 
+  8       quote_no
+  9      ) 
+ 10  ;
+
+Table JOB altered.
+
+SQL> 
+SQL> ALTER TABLE EMPLOYEE 
+  2      ADD CONSTRAINT ROLE_EMPLOYEE FOREIGN KEY 
+  3      ( 
+  4       ROLE_role_name
+  5      ) 
+  6      REFERENCES ROLE 
+  7      ( 
+  8       role_name
+  9      ) 
+ 10  ;
+
+Table EMPLOYEE altered.
+
+SQL> 
+SQL> ALTER TABLE COMBINATIONS 
+  2      ADD CONSTRAINT TRAILER_COMBINATION FOREIGN KEY 
+  3      ( 
+  4       TRAILER_trailer_code
+  5      ) 
+  6      REFERENCES TRAILER 
+  7      ( 
+  8       trailer_code
+  9      ) 
+ 10  ;
+
+Table COMBINATIONS altered.
+
+SQL> 
+SQL> ALTER TABLE COMBINATIONS 
+  2      ADD CONSTRAINT TRUCK_COMBINATION FOREIGN KEY 
+  3      ( 
+  4       TRUCK_VIN
+  5      ) 
+  6      REFERENCES TRUCK 
+  7      ( 
+  8       VIN
+  9      ) 
+ 10  ;
+
+Table COMBINATIONS altered.
+
+SQL> 
+SQL> ALTER TABLE TRUCK 
+  2      ADD CONSTRAINT TRUCK_TYPE_TRUCK FOREIGN KEY 
+  3      ( 
+  4       TRUCKTYPE_truck_manu,
+  5       TRUCKTYPE_truck_model
+  6      ) 
+  7      REFERENCES TRUCKTYPE 
+  8      ( 
+  9       truck_manu,
+ 10       truck_model
+ 11      ) 
+ 12  ;
+
+Table TRUCK altered.
+
+SQL> 
+SQL> SPOOL off
